@@ -1,0 +1,8 @@
+# IDE files
+*.vscode
+*.code-workspace
+
+# Build artifacts
+__pycache__
+temp
+*.pkl
