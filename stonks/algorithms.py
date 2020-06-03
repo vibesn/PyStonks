@@ -11,7 +11,7 @@ import exchange
 KIPPfastDays = 1
 KIPPslowDays = 5
 
-## Sell stocks when their fast (1 day) average crosses below their slow (10
+## Sell stocks when their fast (1 day) average crosses below their slow (5
 #  day) average. Buy stocks when the fast average crosses above their slow
 #  average, distribute cash based on steepness of crossing
 #  @param symbols list of symbols to analyze

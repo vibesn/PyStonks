@@ -8,5 +8,6 @@ __pycache__
 # Secrets
 apikey
 robinhood
-symbols*
+symbolsAll
+SymbolsPruned
 stonks/algorithmsSecret.py
