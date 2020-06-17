@@ -81,3 +81,9 @@ class Portfolio:
   def fund(self, cash):
     self.cash += decimal.Decimal(cash)
     self.investment += float(cash)
+
+  ## Get the portfolio diversity with respect to a symbol
+  #  @param symbol to inquire
+  #  @return [0.0:1.0] fraction of portfolio value that is this symbol's value
+  def diversity(self, symbol):
+    return float(exchange.price(symbol, self.shares(symbol))) / self.value()
