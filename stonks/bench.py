@@ -45,7 +45,7 @@ def main():
       exchange.closeMarket()
 
     closeRatio = value / p.investment
-    percentageYr = math.log(closeRatio) * 252 / period / math.log(2)
+    percentageYr = math.log(closeRatio) * 252 / period
     percentages.append(percentageYr * 100)
     print("{:3} ended with gain of ${:10.2f} with ${:10.2f} invested at {:6.1f}% {:6.1f}%(yr)".format(
       run, value - p.investment, p.investment, (closeRatio - 1) * 100, percentageYr * 100))

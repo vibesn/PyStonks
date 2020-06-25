@@ -82,7 +82,7 @@ def init(symbols, period=100, historyDays=20, quiet=False):
 #  @return dictionary {date: OHLC data}
 async def initSymbol(symbol, outputSize="compact"):
   ts = TimeSeries(key=API_KEY)
-  data, _ = await ts.get_daily(symbol, outputsize=outputSize)
+  data, _ = await ts.get_daily_adjusted(symbol, outputsize=outputSize)
   await ts.close()
   return (symbol, data)
 

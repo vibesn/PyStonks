@@ -18,6 +18,7 @@ class Portfolio:
     self.investment = float(cash)
     self.cash = decimal.Decimal(cash)
     self.tickets = {}
+    self.ticketCosts = {}
 
   ## String representation
   #  @param self object pointer
@@ -38,7 +39,9 @@ class Portfolio:
     self.cash -= price
     if symbol not in self.tickets:
       self.tickets[symbol] = 0
+      self.ticketCosts[symbol] = 0
     self.tickets[symbol] += quantity
+    self.ticketCosts[symbol] += price
     if receipt:
       print("Buy  {:2} of {:5} for ${:5.2f}".format(quantity, symbol, price))
     return quantity
@@ -49,11 +52,21 @@ class Portfolio:
   #  @param receipt True will print out a receipt for the transaction
   #  @return real quantity sold
   def sell(self, symbol, quantity, receipt=False):
-    if symbol not in self.tickets:
+    if symbol not in self.tickets or self.tickets[symbol] == 0:
+      return 0
+    avgCost = (self.ticketCosts[symbol] / self.tickets[symbol])
+    if exchange.price(symbol) < avgCost:
+      print(
+          "Not selling {:5} for less than its cost: today's price ${:0.2f} vs average cost ${:0.2f}".format(
+              symbol,
+              exchange.price(symbol),
+              avgCost))
       return 0
     quantity = math.floor(min(quantity, self.tickets[symbol]))
     price = exchange.price(symbol, quantity)
     self.cash += price
+    self.ticketCosts[symbol] *= decimal.Decimal(
+      1 - quantity / self.tickets[symbol])
     self.tickets[symbol] -= quantity
     if receipt:
       print("Sell {:2} of {:5} for ${:5.2f}".format(quantity, symbol, price))
