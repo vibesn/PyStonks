@@ -8,8 +8,10 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 6:
 import decimal
 import exchange
 
+VGerSellFactor = 30
+VGerHistoryDays = 30
 KIPPfastDays = 1
-KIPPslowDays = 5
+KIPPslowDays = VGerHistoryDays
 
 ## Sell stocks when their fast (1 day) average crosses below their slow (5
 #  day) average. Buy stocks when the fast average crosses above their slow
@@ -18,29 +20,24 @@ KIPPslowDays = 5
 #  @param portfolio to purchase
 def KIPP(symbols, portfolio):
   pairs = []
-  totalMetric = 0
   for name in symbols:
-    avgFast = 0
-    if exchange.priceHistory(name, KIPPslowDays, time="close") is None:
+    metric = 0
+    if exchange.priceHistory(name, VGerHistoryDays - 1, time="close") is None:
       continue
-    for i in range(1, KIPPfastDays + 1):
-      avgFast += exchange.priceHistory(name, i, time="close")
-      avgFast += exchange.priceHistory(name, i, time="open")
-    avgFast = avgFast / KIPPfastDays
-
-    avgSlow = 0
-    for i in range(1, KIPPslowDays + 1):
-      avgSlow += exchange.priceHistory(name, i, time="close")
-      avgSlow += exchange.priceHistory(name, i, time="open")
-    avgSlow = avgSlow / KIPPslowDays
-
-    metric = avgFast / avgSlow - 1
-    if metric < 0 and portfolio.shares(name) > 0:
-      portfolio.sell(name, portfolio.shares(name))
-    if metric > 0 and portfolio.shares(name) == 0:
-      pairs.append((name, metric))
-      totalMetric += metric
+    for i in range(1, VGerHistoryDays):
+      dayChange = exchange.priceHistory(
+        name, i, time="close") / exchange.priceHistory(name, i, time="open") - 1
+      metric += dayChange
+    pairs.append((name, metric))
+  pairs.sort(key=lambda x: -x[1])
   for pair in pairs:
-    toBuy = portfolio.cash * pair[1] / totalMetric
-    quantity = toBuy / exchange.price(pair[0]) / 2
-    portfolio.buy(pair[0], quantity)
+    quantity = decimal.Decimal(
+      portfolio.value() / VGerSellFactor) / exchange.price(pair[0])
+    if portfolio.sell(pair[0], quantity) != 0:
+      break
+
+  pairs.reverse()
+  for pair in pairs:
+    quantity = portfolio.cash / exchange.price(pair[0]) / 2
+    if portfolio.buy(pair[0], quantity) != 0:
+      break

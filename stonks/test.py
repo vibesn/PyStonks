@@ -14,11 +14,13 @@ from matplotlib import dates
 from matplotlib import pyplot
 import mplfinance
 import pandas
+import statistics
+
+import alpaca
 
 ## Main function
 def main():
-  with open("symbolsPruned", "r", newline="\n") as file:
-    symbols = file.read().strip().split("\n")
+  symbols = alpaca.setup()
 
   period = 500
 
@@ -61,6 +63,11 @@ def main():
   gains = dataClose[-1]
   print("Ended with gain of ${:.2f} with ${:.2f} invested at {:.1f}% {:.1f}%(yr)".format(
     gains, p.investment, (closeRatio - 1) * 100, percentageYr * 100))
+
+  riskFreeReturn = 3
+  print("Average daily return: {}".format(statistics.mean(dailyPercent)))
+  sharpe = (statistics.mean(dailyPercent) - riskFreeReturn)/statistics.stdev(dailyPercent)
+  print("Sharpe Ratio: {}".format(sharpe))
 
   data = {
       "Open": dataOpen,
