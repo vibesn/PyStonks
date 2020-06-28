@@ -15,13 +15,28 @@ def main():
 
   exchange.init(symbols)
 
+
+
   prunedSymbols = []
   for name in symbols:
     data = exchange.data[name]
+    sma30 = 0
+    sma50 = 0
+    sma100 = 0
+    for day in range(0,100):
+      
+      sma100 = sma100 + float(data[day]["4. close"])
+      sma100 = sma100/100
+    for day in range(0,30):
+      sma30 = sma30 + float(data[day]["4. close"])
+      sma30 = sma30/30
+    for day in range(0,50):
+      sma50 = sma50 + float(data[day]["4. close"])
+      sma50 = sma50/50          
     percent = float(data[-1]["4. close"]) / float(data[0]["4. close"]) - 1
-    if percent > 0:
-      print("Kept    {:5}, 100 day percentage {:3.2f}%".format(
-          name, percent * 100))
+    if sma30 > sma50 and sma50 > sma100:
+      print("Kept    {:5}, 1b;afh blah blah".format(
+          name))
       prunedSymbols.append((name, percent))
     else:
       print("Pruning {:5}, 100 day percentage {:3.2f}%".format(
